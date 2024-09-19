@@ -33,7 +33,7 @@ module.exports = {
     async createThought(req,res) {
         try{
             //Check if the poster for the thought exists
-            const poster = await User.findOne({_id:req.body.userId})
+            const poster = await User.findOne({_id:req.body.userId,username:req.body.username})
             if(!poster){
                 res.status(404).json('Poster not found')
                 return
@@ -112,7 +112,7 @@ module.exports = {
             //Add reaction to the thought's reaction array
             thought.reactions.push({reactionBody:req.body.reactionBody,username:req.body.username})
             await thought.save()
-            res.status(200).json(thought)
+            res.status(201).json(thought)
         }
         catch(err){
             console.log(err)
@@ -122,20 +122,22 @@ module.exports = {
     //Delete reaction
     async deleteReaction(req,res) {
         try{
-            //Check if the thought or reaction exists
+            //Check if the thought
             const thought = await Thought.findOne({_id:req.params.thoughtId})
             if(!thought){
                 res.status(404).json('Thought not found')
                 return
             }
-            else if(!thought.reactions.includes({_id:req.params.reactionId})){
+
+            //Deletes reaction from the reactions array
+            const deleted = thought.reactions.pull({_id:req.params.reactionId})
+
+            //Check for reaction
+            if(!deleted){
                 res.status(404).json('Reaction not found')
                 return
             }
-
-            //Deletes reaction from the reactions array
-            thought.reactions.pull({_id:req.params.reactionId})
-            await thought.save()
+            await thought.save() 
             
             res.status(200).json(thought)
         }

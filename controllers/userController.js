@@ -52,7 +52,7 @@ module.exports = {
                 username:req.body.username,
                 email:req.body.email
             })
-            res.status(200).json(newUser)
+            res.status(201).json(newUser)
             
         }
         catch(err){
@@ -122,7 +122,7 @@ module.exports = {
             user.friends.push(req.params.friendId)
             await user.save()
 
-            res.status(200).json(user)
+            res.status(201).json(user)
         }
         catch(err){
             res.status(500).json(err)
